@@ -67,7 +67,7 @@ public_users.get('/review/:isbn',function (req, res) {
 });
 
 
-  // Task 10: Get all books using Promise
+ // Task 10: Get all books using an async callback function
   function getBooks() {
     return new Promise((resolve, reject) => {
       if (books) {
@@ -99,14 +99,15 @@ public_users.get('/review/:isbn',function (req, res) {
     });
   }
   
-  general.get("/isbn/:isbn", async (req, res) => {
-    try {
-      const isbn = req.params.isbn;
-      const data = await getBookByISBN(isbn);
-      res.send(JSON.stringify(data, null, 4));
-    } catch (err) {
-      res.status(404).send({ message: err });
-    }
+  general.get('/isbn/:isbn', (req, res) => {
+    const isbn = req.params.isbn;
+    getBookByISBN(isbn)
+      .then((book) => {
+        res.send(JSON.stringify(book, null, 4)); // Pretty print JSON
+      })
+      .catch((error) => {
+        res.status(404).send({ message: error });
+    });
   });
 
   // Task 12: Get books by author using Promise
