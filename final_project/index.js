@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const session = require('express-session')
 const customer_routes = require('./router/auth_users.js').authenticated;
+const public_routes = require('./router/general.js').public_users;
 const genl_routes = require('./router/general.js').general;
 
 const app = express();
@@ -11,9 +12,9 @@ app.use(express.json());
 app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true}))
 
 app.use("/customer/auth/*", function auth(req,res,next){
-    const token = re.session.authorization?.accessToken;
+    const token = req.session.authorization?.accessToken;
     if(!token){
-       res.status(403).json({message: "Access token missing. Please log in."})
+       return res.status(403).json({message: "Access token missing. Please log in."})
     }
     jwt.verify(token, "access",(err, user) => {
        if(err){
@@ -27,6 +28,7 @@ app.use("/customer/auth/*", function auth(req,res,next){
 const PORT =5000;
 
 app.use("/customer", customer_routes);
-app.use("/", genl_routes);
+app.use("/", public_routes);
+app.use("/general", genl_routes);
 
 app.listen(PORT,()=>console.log("Server is running"));
