@@ -1,0 +1,26 @@
+$body = @{
+    username = "john1"
+    password = "pass123"
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri "http://localhost:5000/register" -Method POST -Body $body -ContentType "application/json"
+
+
+##Login success
+Write-Host "`n=== login ===" -ForegroundColor Green
+$loginBody = @{
+    username = "john1"
+    password = "pass123"
+} | ConvertTo-Json
+
+try {
+    $loginResult = Invoke-RestMethod -Uri "http://localhost:5000/customer/login" -Method POST -Body $loginBody -ContentType "application/json" -SessionVariable session
+    Write-Host "Yes: $($loginResult.message)" -ForegroundColor Green
+} catch {
+    Write-Host "No: $($_.Exception.Response.StatusCode) - $($_.ErrorDetails.Message)" -ForegroundColor Red
+} 
+Invoke-RestMethod -Uri "http://localhost:5000/customer/auth/review/1" `
+  -Method Put `
+  -Headers @{ "Content-Type" = "application/json" } `
+  -Body '{"review":"This is John’s review"}'
+
