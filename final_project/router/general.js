@@ -80,7 +80,7 @@ public_users.get('/review/:isbn',function (req, res) {
   let isbn = req.params.isbn;
   let book_find = books[isbn];
   if(book_find){
-    return res.status(200).json(books[isbn].review)
+    return res.status(200).json(books[isbn].reviews)
   }
   return res.status(300).json({message: "Yet to be implemented"});
 });

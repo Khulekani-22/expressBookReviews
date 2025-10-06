@@ -56,9 +56,6 @@ regd_users.post("/login", (req,res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-    if (!req.session || !req.session.authorization || !req.session.authorization.username) {
-        return res.status(401).json({ message: "User not logged in" });
-    }
 
     let isbn = req.params.isbn;
     let username = req.session.authorization.username;
@@ -80,6 +77,34 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
         reviews: book.reviews
     });
 });
+
+//delete review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    
+    let isbn = req.params.isbn;
+    let username = req.session.authorization.username;
+    console.log("Je suis ici")
+
+    let book = books[isbn];
+    if (!book) {
+        return res.status(404).json({ message: "Book not found" });
+    }
+
+    let review = book.reviews[username]
+    
+    if(review){
+      delete book.reviews[username];
+
+      return res.status(200).json({
+          message: `Review ${review} successfully deleted`
+      })
+  }else{
+       return res.status(400).json({
+        message: `Review for this user not exist`
+    })
+
+  }
+})
 
 
 module.exports.authenticated = regd_users;
